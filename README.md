@@ -3,7 +3,7 @@
 This project is created using Python 3.7.4
 
 ##
-This script reads my mailbox and removes spam mail
+This script reads my mailbox and removes spam mail.
 
 ### Prerequisites
 
