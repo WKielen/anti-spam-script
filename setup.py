@@ -11,7 +11,7 @@ setuptools.setup(
     description="A small script to remove spam from a mailbox.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/wkielen/mail-api",
+    url="https://github.com/wkielen/anti-spam-script",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

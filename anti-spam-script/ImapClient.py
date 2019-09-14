@@ -91,7 +91,7 @@ class ImapClient:
                         # not multipart - i.e. plain text, no attachments
                         charset = msg.get_content_charset()
                         body = msg.get_payload(decode=True).decode(encoding=charset, errors="ignore")
-                    messages.append({'num': num, 'body': body})
+                    messages.append({'num': num, 'subject': msg_subject, 'body': body})
         return messages
 
     def delete_message(self, msg_id):
