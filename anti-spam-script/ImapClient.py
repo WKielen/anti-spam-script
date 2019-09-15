@@ -3,20 +3,22 @@ import email.header
 import imaplib
 import os
 import sys
-
+# inspiratie opgedaan: https://www.timpoulsen.com/2018/reading-email-with-python.html
 
 class ImapClient:
     imap = None
 
     def __init__(self,
                  recipient,
-                 server='server72.hosting2go.nl',
+                 password,
+                 server,
                  use_ssl=True,
-                 move_to_trash=True):
+                 move_to_trash=False):
         # check for required param
         if not recipient:
             raise ValueError('You must provide a recipient email address')
         self.recipient = recipient
+        self.password = password
         self.use_ssl = use_ssl
         self.move_to_trash = move_to_trash
         self.recipient_folder = 'INBOX'
@@ -28,7 +30,8 @@ class ImapClient:
 
     def login(self):
         try:
-            rv, data = self.imap.login(self.recipient, 'TTVN4all!')
+            rv, data = self.imap.login(self.recipient, self.password)
+            print(self.imap.list())
         except (imaplib.IMAP4_SSL.error, imaplib.IMAP4.error) as err:
             print('LOGIN FAILED!')
             print(err)
@@ -45,17 +48,7 @@ class ImapClient:
         """
         self.recipient_folder = folder
 
-    def get_messages(self, sender, subject=''):
-        """
-        Scans for email messages from the given sender and optionally
-        with the given subject
-
-        :param sender Email address of sender of messages you're searching for
-        :param subject (Partial) subject line to scan for
-        :return List of dicts of {'num': num, 'body': body}
-        """
-        if not sender:
-            raise ValueError('You must provide a sender email address')
+    def get_messages(self):
 
         # select the folder, by default INBOX
         resp, _ = self.imap.select(self.recipient_folder)
@@ -65,33 +58,46 @@ class ImapClient:
 
         messages = []
 
-        mbox_response, msgnums = self.imap.search(None, 'FROM', sender)
+        # result, data = self.imap.uid('search', None, "ALL")
+        # uidList = data[0].split()
+        # for uid in uidList:
+        #     # self.imap.uid('STORE', uid, '', '\\Trash')
+        #     self.imap.uid('STORE', uid, '+X-GM-LABELS', '\\Trash')
+        #     self.imap.expunge()
+        #
+        #     self.imap.uid('STORE', uid, '+FLAGS', '\\INBOX.Deleted items')
+        #     self.imap.expunge()
+
+        mbox_response, msgnums = self.imap.search(None, 'ALL')
         if mbox_response == 'OK':
             for num in msgnums[0].split():
+                # We hebben een lijst van bericht nummers. We gaan ze per stuk ophalen
                 retval, rawmsg = self.imap.fetch(num, '(RFC822)')
                 if retval != 'OK':
                     print('ERROR getting message', num)
                     continue
                 msg = email.message_from_bytes(rawmsg[0][1])
                 msg_subject = msg["Subject"]
-                if subject in msg_subject:
-                    body = ""
-                    if msg.is_multipart():
-                        for part in msg.walk():
-                            type = part.get_content_type()
-                            disp = str(part.get('Content-Disposition'))
-                            # look for plain text parts, but skip attachments
-                            if type == 'text/plain' and 'attachment' not in disp:
-                                charset = part.get_content_charset()
-                                # decode the base64 unicode bytestring into plain text
-                                body = part.get_payload(decode=True).decode(encoding=charset, errors="ignore")
-                                # if we've found the plain/text part, stop looping thru the parts
-                                break
-                    else:
-                        # not multipart - i.e. plain text, no attachments
-                        charset = msg.get_content_charset()
-                        body = msg.get_payload(decode=True).decode(encoding=charset, errors="ignore")
-                    messages.append({'num': num, 'subject': msg_subject, 'body': body})
+                msg_to = msg["To"]
+                msg_from = msg["From"]
+                msg_id = msg['Message-ID']
+                body = ""
+                if msg.is_multipart():
+                    for part in msg.walk():
+                        type = part.get_content_type()
+                        disp = str(part.get('Content-Disposition'))
+                        # look for plain text parts, but skip attachments
+                        if type == 'text/plain' and 'attachment' not in disp:
+                            charset = part.get_content_charset()
+                            # decode the base64 unicode bytestring into plain text
+                            body = part.get_payload(decode=True).decode(encoding=charset, errors="ignore")
+                            # if we've found the plain/text part, stop looping thru the parts
+                            break
+                else:
+                    # not multipart - i.e. plain text, no attachments
+                    charset = msg.get_content_charset()
+                    body = msg.get_payload(decode=True).decode(encoding=charset, errors="ignore")
+                messages.append({'num': num, 'msgid': msg_id, 'to': msg_to, 'from': msg_from, 'subject': msg_subject, 'body': body})
         return messages
 
     def delete_message(self, msg_id):
@@ -99,8 +105,8 @@ class ImapClient:
             return
         if self.move_to_trash:
             # move to Trash folder
-            self.imap.store(msg_id, '+X-GM-LABELS', '\\Trash')
+            print(self.imap.store(msg_id, '+X-GM-LABELS', '\\Trash'))
             self.imap.expunge()
         else:
-            self.imap.store(msg_id, '+FLAGS', '\\Deleted')
-            self.imap.expunge()
+            print(self.imap.store(msg_id, '+FLAGS', '\\Deleted'))
+            # print(self.imap.expunge())
