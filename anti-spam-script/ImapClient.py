@@ -31,7 +31,7 @@ class ImapClient:
     def login(self):
         try:
             rv, data = self.imap.login(self.recipient, self.password)
-            print(self.imap.list())
+            # print(self.imap.list())
         except (imaplib.IMAP4_SSL.error, imaplib.IMAP4.error) as err:
             print('LOGIN FAILED!')
             print(err)
@@ -57,16 +57,6 @@ class ImapClient:
             sys.exit(1)
 
         messages = []
-
-        # result, data = self.imap.uid('search', None, "ALL")
-        # uidList = data[0].split()
-        # for uid in uidList:
-        #     # self.imap.uid('STORE', uid, '', '\\Trash')
-        #     self.imap.uid('STORE', uid, '+X-GM-LABELS', '\\Trash')
-        #     self.imap.expunge()
-        #
-        #     self.imap.uid('STORE', uid, '+FLAGS', '\\INBOX.Deleted items')
-        #     self.imap.expunge()
 
         mbox_response, msgnums = self.imap.search(None, 'ALL')
         if mbox_response == 'OK':
@@ -105,8 +95,8 @@ class ImapClient:
             return
         if self.move_to_trash:
             # move to Trash folder
-            print(self.imap.store(msg_id, '+X-GM-LABELS', '\\Trash'))
+            self.imap.store(msg_id, '+X-GM-LABELS', '\\Trash')
             self.imap.expunge()
         else:
-            print(self.imap.store(msg_id, '+FLAGS', '\\Deleted'))
+            self.imap.store(msg_id, '+FLAGS', '\\Deleted')
             # print(self.imap.expunge())

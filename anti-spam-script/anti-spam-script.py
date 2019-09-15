@@ -9,7 +9,6 @@ import sys
 import base64
 import email
 
-
 with open("..\\config.yml", 'r') as ymlfile:
     cfg = yaml.load(ymlfile, Loader=yaml.BaseLoader)
     imap_param = cfg['imap']
@@ -18,24 +17,33 @@ with open("..\\config.yml", 'r') as ymlfile:
     imap_password = imap_param['password']
     misc_param = cfg['misc']
     interval = int(misc_param['interval'])
-
+    filter_param = cfg['filter']
 
 
 def do_something(sc):
-    print ("Doing stuff...")
+    print("Doing stuff...")
     imap = ImapClient(recipient=imap_userid, password=imap_password, server=imap_host)
     imap.login();
     imap.select_folder('INBOX')
     messages = imap.get_messages()
     # Do something with the messages
-    print("Messages in my inbox:")
+    # print("Messages in my inbox:")
     for msg in messages:
         # msg is a dict of {'num': num, 'body': body}
         # print(msg['num'], msg['msgid'], msg['to'], msg['from'], msg['subject'])
-        if msg['to'] is not None:
-            if "Serge Hoek" in msg['from']:
-                print('Delete', msg['to'], msg['subject'], msg['from'])
-                imap.delete_message(msg['num'])
+        # print('---', msg['to'],  '|', msg['from'], '|', msg['subject'],)
+
+        for item in filter_param:
+            delete_this_message = True
+            for attribute in item:
+                if msg[attribute] is not None:
+                    # print(item[attribute])
+                    if item[attribute] not in msg[attribute]:
+                        delete_this_message = False
+
+            if delete_this_message:
+                print('Deleted :', msg['to'], '|', msg['from'], '|', msg['subject'], )
+                #imap.delete_message(msg['num'])
     imap.logout()
     # when done, yo
     # do your stuff
