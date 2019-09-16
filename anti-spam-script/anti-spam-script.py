@@ -27,23 +27,20 @@ def do_something(sc):
     imap.select_folder('INBOX')
     messages = imap.get_messages()
     # Do something with the messages
-    # print("Messages in my inbox:")
     for msg in messages:
-        # msg is a dict of {'num': num, 'body': body}
-        # print(msg['num'], msg['msgid'], msg['to'], msg['from'], msg['subject'])
-        # print('---', msg['to'],  '|', msg['from'], '|', msg['subject'],)
-
+        # msg is a dict of {'num': num, 'msgid': msg_id, 'to': msg_to, 'from': msg_from,
+        #                   'subject': msg_subject, 'body': body}
         for item in filter_param:
+            # handle a mail
             delete_this_message = True
             for attribute in item:
                 if msg[attribute] is not None:
-                    # print(item[attribute])
                     if item[attribute] not in msg[attribute]:
                         delete_this_message = False
 
             if delete_this_message:
                 print('Deleted :', msg['to'], '|', msg['from'], '|', msg['subject'], )
-                #imap.delete_message(msg['num'])
+                imap.delete_message(msg['num'])
     imap.logout()
     # when done, yo
     # do your stuff
