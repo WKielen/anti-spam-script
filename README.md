@@ -29,7 +29,6 @@ Upload subsequent versions to pypi
 
 Install distribution directly in path
 * pip install --upgrade .
-
 To fill the requirements file
 * pip freeze > requirements.txt
 
