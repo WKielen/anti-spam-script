@@ -1,0 +1,17 @@
+misc:
+    interval : 5
+filter:
+    - to      : 'info@ttvn.nl'
+      body    : 'Dating'
+    - to      : 'info@ttvn.nl'
+      body    : 'Madchen'
+    - to      : 'info@ttvn.nl'
+      body    : 'Sex'
+    - to      : 'info@ttvn.nl'
+      body    : 'sex'
+    - to      : 'info@ttvn.nl'
+      body    : 'sex'
+    - to      : 'info@ttvn.nl'
+      body    : 'investment'
+    - from    : 'clubkas-acties.nl'
+    - from    : 'info@esportsxperts.nl'
