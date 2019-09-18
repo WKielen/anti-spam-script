@@ -1,1 +1,1 @@
-name = "antispamscript"
+name = "script"

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- encoding: utf-8 -*-
-from .ImapClient import ImapClient
+from antispamscript.ImapClient import ImapClient
 import sched
 import time
 import yaml
