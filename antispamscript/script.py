@@ -4,6 +4,7 @@ from antispamscript.ImapClient import ImapClient
 import sched
 import time
 import yaml
+from time import strftime
 
 with open("config_ass.yml", 'r') as ymlconfigfile:
     cfg = yaml.load(ymlconfigfile, Loader=yaml.BaseLoader)
@@ -25,7 +26,7 @@ def do_something(sc):
         imap.login()
         imap.select_folder('INBOX')
         messages = imap.get_messages()
-        print("Messages in mailbox: ", len(messages))
+        print(strftime("%H:%M", time.localtime()), " Messages in mailbox: ", len(messages))
         # Do something with the messages
         for msg in messages:
             # msg is a dict of {'num': num, 'msgid': msg_id, 'to': msg_to, 'from': msg_from,
@@ -42,13 +43,13 @@ def do_something(sc):
                     print('Deleted :', msg['to'], '|', msg['from'], '|', msg['subject'], )
                     imap.delete_message(msg['num'])
         imap.logout()
-        # when done, yo
-        # do your stuff
-        app.enter(interval, 1, do_something, (sc,))
+
     except Exception as err:
         print('Get Messages Failed!')
         print(err)
-
+    # when done, yo
+    # do your stuff
+    app.enter(interval, 1, do_something, (sc,))
 
 s = None
 app = sched.scheduler(time.time, time.sleep)
