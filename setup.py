@@ -20,7 +20,7 @@ setuptools.setup(
     ],
     entry_points={
         'console_scripts': [
-            'antispamscript=antispamscript.antispamscript:main',
+            'antispamscript=antispamscript.script:main',
         ],
     }
 )
