@@ -14,9 +14,8 @@ with open("config_ass.yml", 'r') as ymlconfigfile:
     imap_password = imap_param['password']
 
 
-def do_something(sc):
+def do_something(count_deleted):
     try:
-        print("Doing stuff...")
         with open("filter_ass.yml", 'r') as ymlfilterfile:
             cfgf = yaml.load(ymlfilterfile, Loader=yaml.BaseLoader)
             misc_param = cfgf['misc']
@@ -26,7 +25,7 @@ def do_something(sc):
         imap.login()
         imap.select_folder('INBOX')
         messages = imap.get_messages()
-        print(strftime("%H:%M", time.localtime()), " Messages in mailbox: ", len(messages))
+        print(strftime("%H:%M", time.localtime()), " Messages in mailbox: ", len(messages), '|', count_deleted, 'deleted')
         # Do something with the messages
         for msg in messages:
             # msg is a dict of {'num': num, 'msgid': msg_id, 'to': msg_to, 'from': msg_from,
@@ -40,7 +39,8 @@ def do_something(sc):
                             delete_this_message = False
 
                 if delete_this_message:
-                    print('Deleted :', msg['to'], '|', msg['from'], '|', msg['subject'], )
+                    count_deleted += 1
+                    print('Deleted : ', count_deleted, '|', msg['to'], '|', msg['from'], '|', msg['subject'], )
                     imap.delete_message(msg['num'])
         imap.logout()
 
@@ -49,11 +49,11 @@ def do_something(sc):
         print(err)
     # when done, yo
     # do your stuff
-    app.enter(interval, 1, do_something, (sc,))
+    app.enter(interval, 1, do_something, (count_deleted,))
 
-s = None
+
 app = sched.scheduler(time.time, time.sleep)
-do_something(s)
+do_something(count_deleted=0)
 
 
 def main():
