@@ -25,3 +25,4 @@ filter:
       body    : 'Bitcoin'
     - to      : 'info@ttvn.nl'
       body    : 'currency'
+    - subject : 'Uw persoonlijke gegevens zijn in gevaar'

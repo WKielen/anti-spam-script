@@ -30,6 +30,7 @@ def do_something(count_deleted):
         for msg in messages:
             # msg is a dict of {'num': num, 'msgid': msg_id, 'to': msg_to, 'from': msg_from,
             #                   'subject': msg_subject, 'body': body}
+            print (msg['subject'])
             for item in filter_param:
                 # handle a mail
                 delete_this_message = True

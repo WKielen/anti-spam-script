@@ -67,7 +67,7 @@ class ImapClient:
                         print('ERROR getting message', num)
                         continue
                     msg = email.message_from_bytes(rawmsg[0][1])
-                    msg_subject = msg["Subject"]
+                    msg_subject = decode_mime_words(msg["Subject"])
                     msg_to = msg["To"]
                     msg_from = msg["From"]
                     msg_id = msg['Message-ID']
@@ -107,3 +107,9 @@ class ImapClient:
         except Exception as err:
             print('Delete messages Failed!')
             print(err)
+
+
+def decode_mime_words(s):
+    return u''.join(
+        word.decode(encoding or 'utf8') if isinstance(word, bytes) else word
+        for word, encoding in email.header.decode_header(s))
