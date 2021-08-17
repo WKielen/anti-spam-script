@@ -11,6 +11,7 @@ class ImapClient:
                  recipient,
                  password,
                  server,
+                 portnumber=993,
                  use_ssl=False,
                  move_to_trash=False):
         # check for required param
@@ -23,9 +24,9 @@ class ImapClient:
         self.recipient_folder = 'INBOX'
         # instantiate our IMAP client object
         if self.use_ssl:
-            self.imap = imaplib.IMAP4_SSL(server)
+            self.imap = imaplib.IMAP4_SSL(server, port=portnumber)
         else:
-            self.imap = imaplib.IMAP4(server)
+            self.imap = imaplib.IMAP4(server, port=portnumber)
 
     def login(self):
         try:
@@ -57,7 +58,6 @@ class ImapClient:
                 sys.exit(1)
 
             messages = []
-
             mbox_response, msgnums = self.imap.search(None, 'ALL')
             if mbox_response == 'OK':
                 for num in msgnums[0].split():
@@ -71,6 +71,9 @@ class ImapClient:
                     msg_to = msg["To"]
                     msg_from = msg["From"]
                     msg_id = msg['Message-ID']
+
+                    print(msg_subject)
+
                     body = ""
                     if msg.is_multipart():
                         for part in msg.walk():
@@ -80,13 +83,19 @@ class ImapClient:
                             if type == 'text/plain' and 'attachment' not in disp:
                                 charset = part.get_content_charset()
                                 # decode the base64 unicode bytestring into plain text
-                                body = part.get_payload(decode=True).decode(encoding=charset, errors="ignore")
+                                try:
+                                    body = part.get_payload(decode=True).decode(encoding=charset, errors="ignore")
+                                except Exception as error:
+                                    print(error)
                                 # if we've found the plain/text part, stop looping thru the parts
                                 break
                     else:
                         # not multipart - i.e. plain text, no attachments
                         charset = msg.get_content_charset()
-                        body = msg.get_payload(decode=True).decode(encoding=charset, errors="ignore")
+                        try:
+                            body = part.get_payload(decode=True).decode(encoding=charset, errors="ignore")
+                        except Exception as error:
+                            print(error)
                     messages.append({'num': num, 'msgid': msg_id, 'to': msg_to, 'from': msg_from, 'subject': msg_subject, 'body': body})
             return messages
         except Exception as err:

@@ -12,6 +12,7 @@ with open("config_ass.yml", 'r') as ymlconfigfile:
     imap_host = imap_param['host']
     imap_userid = imap_param['userid']
     imap_password = imap_param['password']
+    imap_port = imap_param['port']
 
 
 def do_something(count_deleted):
@@ -21,7 +22,7 @@ def do_something(count_deleted):
             misc_param = cfgf['misc']
             interval = int(misc_param['interval'])
             filter_param = cfgf['filter']
-        imap = ImapClient(recipient=imap_userid, password=imap_password, server=imap_host)
+        imap = ImapClient(recipient=imap_userid, password=imap_password, server=imap_host, portnumber=int(imap_port), use_ssl=True)
         imap.login()
         imap.select_folder('INBOX')
         messages = imap.get_messages()
@@ -30,7 +31,7 @@ def do_something(count_deleted):
         for msg in messages:
             # msg is a dict of {'num': num, 'msgid': msg_id, 'to': msg_to, 'from': msg_from,
             #                   'subject': msg_subject, 'body': body}
-            print (msg['subject'])
+            # print (msg['subject'])
             for item in filter_param:
                 # handle a mail
                 delete_this_message = True
