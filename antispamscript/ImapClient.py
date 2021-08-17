@@ -72,7 +72,7 @@ class ImapClient:
                     msg_from = msg["From"]
                     msg_id = msg['Message-ID']
 
-                    print(msg_subject)
+                    # print(msg_subject)
 
                     body = ""
                     if msg.is_multipart():
@@ -93,7 +93,7 @@ class ImapClient:
                         # not multipart - i.e. plain text, no attachments
                         charset = msg.get_content_charset()
                         try:
-                            body = part.get_payload(decode=True).decode(encoding=charset, errors="ignore")
+                            body = msg.get_payload(decode=True).decode(encoding=charset, errors="ignore")
                         except Exception as error:
                             print(error)
                     messages.append({'num': num, 'msgid': msg_id, 'to': msg_to, 'from': msg_from, 'subject': msg_subject, 'body': body})

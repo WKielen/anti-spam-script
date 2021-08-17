@@ -1,5 +1,7 @@
 #!/usr/bin/python
 # -*- encoding: utf-8 -*-
+import sys
+
 from antispamscript.ImapClient import ImapClient
 import sched
 import time
@@ -9,14 +11,16 @@ from time import strftime
 with open("config_ass.yml", 'r') as ymlconfigfile:
     cfg = yaml.load(ymlconfigfile, Loader=yaml.BaseLoader)
     imap_param = cfg['imap']
-    imap_host = imap_param['host']
-    imap_userid = imap_param['userid']
-    imap_password = imap_param['password']
-    imap_port = imap_param['port']
 
 
-def do_something(count_deleted):
+def do_something(itemuser, count_deleted):
     try:
+        emailparam = itemuser['emailparam']
+        imap_host = emailparam['host']
+        imap_userid = emailparam['userid']
+        imap_password = emailparam['password']
+        imap_port = emailparam['port']
+
         with open("filter_ass.yml", 'r') as ymlfilterfile:
             cfgf = yaml.load(ymlfilterfile, Loader=yaml.BaseLoader)
             misc_param = cfgf['misc']
@@ -26,7 +30,7 @@ def do_something(count_deleted):
         imap.login()
         imap.select_folder('INBOX')
         messages = imap.get_messages()
-        print(strftime("%H:%M", time.localtime()), " Messages in mailbox: ", len(messages), '|', count_deleted, 'deleted')
+        print(strftime("%H:%M", time.localtime()), "User: ", imap_userid, " Messages in mailbox: ", len(messages), '|', count_deleted, 'deleted')
         # Do something with the messages
         for msg in messages:
             # msg is a dict of {'num': num, 'msgid': msg_id, 'to': msg_to, 'from': msg_from,
@@ -51,11 +55,12 @@ def do_something(count_deleted):
         print(err)
     # when done, yo
     # do your stuff
-    app.enter(interval, 1, do_something, (count_deleted,))
+    app.enter(interval, 1, do_something, (itemuser, count_deleted,))
 
 
 app = sched.scheduler(time.time, time.sleep)
-do_something(count_deleted=0)
+for itemuser in imap_param:
+    do_something(itemuser, count_deleted=0)
 
 
 def main():
