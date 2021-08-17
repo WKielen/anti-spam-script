@@ -33,3 +33,4 @@ filter:
     - from    : 'no-reply@mail.degiro.com'
     - from    : 'notifications-noreply@linkedin.com'
       subject : 'Congratulate'
+    - from    : 'info@sponsorkliks.com'
