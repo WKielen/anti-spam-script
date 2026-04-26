@@ -35,3 +35,4 @@ filter:
       subject : 'Congratulate'
     - from    : 'info@sponsorkliks.com'
     - from    : 'nieuwsbrief@email.officecentre.nl'
+    - from    : 'promotion@zentrada.nl'
