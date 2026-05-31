@@ -95,7 +95,7 @@ nano /home/pi/anti-spam-script/filter_ass.yml
 
 ```yaml
 misc:
-  interval: 300   # seconds between mailbox checks (300 = every 5 minutes)
+  interval: 21600   # seconds between mailbox checks (300 = every 5 minutes)
 
 filter:
   # Each rule is a set of fields that must ALL match (AND logic).
