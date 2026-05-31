@@ -1,0 +1,25 @@
+[Unit]
+Description=Anti-Spam Mail Cleaner
+# Wait for network to be fully up before starting
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Change 'pi' to whatever user owns the script directory
+User=pi
+Group=pi
+# Absolute path to the directory that contains script.py
+WorkingDirectory=/home/pi/anti-spam-script
+ExecStart=/usr/bin/python3 /home/pi/anti-spam-script/script.py
+# Restart automatically on crash, but not on a clean exit (e.g. SIGTERM)
+Restart=on-failure
+RestartSec=30
+# Give it 10 s to shut down gracefully before SIGKILL
+TimeoutStopSec=10
+# Write stdout/stderr to the systemd journal (read with: journalctl -u antispam -f)
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
