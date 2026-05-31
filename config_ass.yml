@@ -1,11 +1,11 @@
 imap:
     - emailparam:
-        userid : secretaris@ttvn.nl
-        password : TTVN4all!
+        userid : wim@ttvn.nl
+        password : Ww
         host: server72.hosting2go.nl
         port: 993
     - emailparam:
         userid : wim@kielen.nl
-        password : Queen_0000
-        host: imap.vevida.com
+        password : Qc
+        host: imap.freedom.nl
         port: 993
