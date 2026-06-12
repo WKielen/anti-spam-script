@@ -1,3 +1,6 @@
+log:
+  dir: /home/pi/logs
+
 imap:
     - emailparam:
         userid : wim@ttvn.nl
